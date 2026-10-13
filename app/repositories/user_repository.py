@@ -2,16 +2,18 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.user import User
-from app.schemas import UserCreate
 
 
 def create_user(
     db: Session,
-    data: UserCreate,
+    username: str,
+    password_hash: str,
+    is_admin: bool = False,
 ) -> User:
     user = User(
-        username=data.username,
-        password=data.password,
+        username=username,
+        password_hash=password_hash,
+        is_admin=is_admin,
     )
 
     db.add(user)
@@ -25,8 +27,11 @@ def get_user_by_username(
     db: Session,
     username: str,
 ) -> User | None:
-    statement = select(User).where(
-        User.username == username
+    statement = (
+        select(User)
+        .where(
+            User.username == username
+        )
     )
 
     return db.scalar(statement)
@@ -35,7 +40,10 @@ def get_user_by_username(
 def get_users(
     db: Session,
 ) -> list[User]:
-    statement = select(User)
+    statement = (
+        select(User)
+        .order_by(User.id.asc())
+    )
 
     return list(
         db.scalars(statement).all()

@@ -20,9 +20,9 @@ def test_root():
     assert response.status_code == 200
 
 
-def test_users_endpoint_exists():
+def test_users_endpoint_requires_authentication():
     response = client.get(
         "/users"
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 401

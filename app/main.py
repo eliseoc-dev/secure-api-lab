@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 
+from app.api.auth import router as auth_router
 from app.api.users import router as users_router
 from app.database.connection import Base, engine
 from app.models import User
+
 
 
 Base.metadata.create_all(
@@ -23,6 +25,8 @@ app.include_router(
     users_router
 )
 
+app.include_router(auth_router)
+app.include_router(users_router)
 
 @app.get("/")
 def root():
