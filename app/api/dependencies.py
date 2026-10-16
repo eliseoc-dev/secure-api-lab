@@ -6,7 +6,9 @@ from fastapi import (
 from fastapi.security import OAuth2PasswordBearer
 from jwt import InvalidTokenError
 from sqlalchemy.orm import Session
-
+from app.security_logging import (
+    security_logger,
+)
 from app.database.session import get_db
 from app.models.user import User
 from app.repositories.user_repository import (
@@ -62,6 +64,11 @@ def require_admin(
     ),
 ) -> User:
     if not current_user.is_admin:
+        security_logger.warning(
+         "Admin access denied "
+         f"for username="
+         f"{current_user.username}"
+)
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Administrator access required.",

@@ -13,6 +13,10 @@ from app.security import (
     verify_password,
 )
 
+from app.security_logging import (
+    security_logger,
+)
+
 
 def register_user(
     db: Session,
@@ -59,6 +63,11 @@ def authenticate_user(
             user.password_hash,
         )
     ):
+    
+        security_logger.warning(
+            "Failed login attempt"
+             f"for username={username}"
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials.",
@@ -66,7 +75,12 @@ def authenticate_user(
                 "WWW-Authenticate": "Bearer"
             },
         )
-
+    
+    security_logger.info(
+             "Successful login "
+             f"for username={username}"
+        )
+            
     return user
 
 
